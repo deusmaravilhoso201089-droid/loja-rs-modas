@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSMODAS | Loja Virtual 200+ Itens</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: #f4f4f4; }
+        header { background: #e91e63; 
+           color: white; 
+           padding: 10px;          
+           text-align: center; 
+           position: sticky;          
+           top: 10; z-index: 100;
+         }
+        .container { max-width: 1100px; margin: 20px auto; padding: 20px; }
+        
+        /* Grid que organiza os 200 produtos */
+        .produtos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .produto-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .produto-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            background: #eee;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        .preco { color: #2e7d32; font-weight: bold; font-size: 1.2rem; }
+        
+        .btn-add {
+            background: #e91e63; color: white; border: none; padding: 10px;
+            width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold;
+        }
+
+        .carrinho-fixo {
+            background: white; padding: 20px; border-radius: 10px;
+            margin-top: 30px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+
+        input { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🛍️ RSMODAS - Catálogo Completo</h1>
+    <p>Clique nos produtos para adicionar ao carrinho</p>
+</header>
+
+<div class="container">
+    <div id="vitrine" class="produtos-grid"></div>
+
+    <div class="carrinho-fixo">
+        <h2>🛒 Seu Pedido</h2>
+        <ul id="itens-carrinho"></ul>
+        <p><strong>Total: R$ <span id="total">0,00</span></strong></p>
+        
+        <form id="form-pedido">
+            <input type="text" id="nome" placeholder="Nome Completo" required>
+            <input type="text" id="endereco" placeholder="Rua E Numero" required>	   
+            <input type="text" id="Cep e Cidade" placeholder="Cep e Cidade" required>
+            <button type="submit" class="btn-add" style="background: #25d366;">Enviar Pedido para WhatsApp</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // --- ÁREA PARA VOCÊ CADASTRAR SEUS PRODUTOS ---
+    // Você pode copiar a linha { id: ... } e colar 200 vezes aqui embaixo
+    const listaDeProdutos = [
+        { id: 1, nome: "Camiseta Masculina", preco: 50.00, imagem: "frente.jpg" },
+        { id: 2, nome: "Tênis Esportivo", preco: 150.00, imagem: "tenis masculino.PNG" },
+        { id: 3, nome: "Eudora Parfum", preco: 250.00, imagem: "EUDORA PARFUM.PNG" },
+        { id: 4, nome: "Relógio Digital", preco: 80.00, imagem: "relogio f.jpg" },
+        { id: 5, nome: "Boné Aba Curva", preco: 25.00, imagem: "bone c.jpg" },
+        { id: 6, nome: "Boné Aba Reta", preco: 40.00, imagem: "bone.JPG" },
+        { id: 7, nome: "caladora digital", preco: 30.00, imagem: "calculo.JPG" },
+        { id: 8, nome: "par de meias cano curto", preco: 12.50, imagem: "meias.JPG" },
+        { id: 9, nome: "tenis esportivo feminino", preco: 160.90, imagem: "tenis f.JPG" },
+        { id: 10, nome: "Camiseta Masculina", preco: 50.00, imagem: "frente.jpg" },
+        { id: 11, nome: "Tênis Esportivo", preco: 150.00, imagem: "tenis masculino.PNG" },
+        { id: 12, nome: "Eudora Parfum", preco: 250.00, imagem: "EUDORA PARFUM.PNG" },
+        { id: 13, nome: "Relógio Digital", preco: 80.00, imagem: "relogio f.jpg" },
+        { id: 14, nome: "Boné Aba Curva", preco: 25.00, imagem: "bone c.jpg" },
+        { id: 15, nome: "Boné Aba Reta", preco: 40.00, imagem: "bone.JPG" },
+        { id: 16, nome: "caladora digital", preco: 30.00, imagem: "calculo.JPG" },
+        { id: 17, nome: "INDISPONIVEL par de meias cano curto", preco: 12.50, imagem: "meias.JPG" },
+        { id: 18, nome: "tenis esportivo feminino", preco: 160.90, imagem: "tenis f.JPG" },
+        { id: 1, nome: "Camiseta Masculina", preco: 50.00, imagem: "frente.jpg" },
+        { id: 2, nome: "Tênis Esportivo", preco: 150.00, imagem: "tenis masculino.PNG" },
+        { id: 3, nome: "Eudora Parfum", preco: 250.00, imagem: "EUDORA PARFUM.PNG" },
+        { id: 4, nome: "Relógio Digital", preco: 80.00, imagem: "relogio f.jpg" },
+        { id: 5, nome: "Boné Aba Curva", preco: 25.00, imagem: "bone c.jpg" },
+        { id: 6, nome: "Boné Aba Reta", preco: 40.00, imagem: "bone.JPG" },
+        { id: 7, nome: "caladora digital", preco: 30.00, imagem: "calculo.JPG" },
+        { id: 8, nome: "par de meias cano curto", preco: 12.50, imagem: "meias.JPG" },
+        { id: 9, nome: "tenis esportivo feminino", preco: 160.90, imagem: "tenis f.JPG" },
+        { id: 10, nome: "Camiseta Masculina", preco: 50.00, imagem: "frente.jpg" },
+        { id: 11, nome: "Tênis Esportivo", preco: 150.00, imagem: "tenis masculino.PNG" },
+        { id: 12, nome: "Eudora Parfum", preco: 250.00, imagem: "EUDORA PARFUM.PNG" },
+        { id: 13, nome: "Relógio Digital", preco: 80.00, imagem: "  " },
+        { id: 14, nome: "Boné Aba Curva", preco: 25.00, imagem: "   " },
+        { id: 15, nome: "Boné Aba Reta", preco: 40.00, imagem: "   " },
+        { id: 16, nome: "caladora digital", preco: 30.00, imagem: "   " },
+        { id: 17, nome: "INDISPONIVEL par de meias cano curto", preco: 12.50, imagem: "  " },
+        { id: 18, nome: "tenis esportivo feminino", preco: 160.90, imagem: " " },
+
+        // Adicione quantos quiser seguindo o padrão acima...
+    ];
+
+    const vitrine = document.getElementById('vitrine');
+    let totalGeral = 0;
+    let itensSelecionados = [];
+
+    // Função que desenha os produtos na tela automaticamente
+    function carregarProdutos() {
+        listaDeProdutos.forEach(prod => {
+            const card = document.createElement('div');
+            card.className = 'produto-card';
+            card.innerHTML = `
+                <img src="${prod.imagem}" alt="${prod.nome}">
+                <h3>${prod.nome}</h3>
+                <p class="preco">R$ ${prod.preco.toFixed(2)}</p>
+                <button class="btn-add" onclick="adicionarAoCarrinho('${prod.nome}', ${prod.preco})">Adicionar</button>
+            `;
+            vitrine.appendChild(card);
+        });
+    }
+
+    function adicionarAoCarrinho(nome, preco) {
+        totalGeral += preco;
+        itensSelecionados.push(nome);
+        
+        document.getElementById('total').innerText = totalGeral.toFixed(2);
+        const listaUI = document.getElementById('itens-carrinho');
+        const li = document.createElement('li');
+        li.innerText = `${nome} - R$ ${preco.toFixed(2)}`;
+        listaUI.appendChild(li);
+    }
+
+    document.getElementById('form-pedido').onsubmit = function(e) {
+        e.preventDefault();
+        if (itensSelecionados.length === 0) {
+            alert("Escolha pelo menos um produto!");
+            return;
+        }
+
+        const nomeCli = document.getElementById('nome').value;
+        const endCli = document.getElementById('endereco').value;
+        const textoPedido = itensSelecionados.join(", ");
+        
+        const mensagem = `Olá! Pedido de: ${nomeCli}%0A` +
+                         `Itens: ${textoPedido}%0A` +
+                         `Total: R$ ${totalGeral.toFixed(2)}%0A` +
+                         `Entrega: ${endCli}`;
+
+        window.open(`https://wa.me/5533991733486?text=${mensagem}`, '_blank');
+    };
+
+    // Inicia a loja
+    carregarProdutos();
+</script>
+
+        <footer>
+      Inteligência na hora de comprar online.
+          <p>© 2026 RSMODAS - sob direçao de Raquel Silva
+         Inteligência na hora de comprar online - insta RS@MODAS</p>
+        </footer>
+</body>
+</html>
